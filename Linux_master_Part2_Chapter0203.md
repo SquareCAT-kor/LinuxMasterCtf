@@ -554,4 +554,221 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
 
 #### 시스템 보안 관리
 
-* 
+##### 리눅스와 보안 
+
+1. 물리적 보안
+
+2. 불필요한 서비스 제거
+
+3. 시스템 정보 감추기
+
+4. rott 패스워드 변경 제한
+
+   * ***grub*** : root 패스워드를 변경, 복원 - 로컬 접근이 가능한 사용자가 시스템 재부팅 과정을 거쳐, 손쉽게 root 의 패스워드를 변경할 수 있다.
+
+     * GRUB 패스워드 설정
+
+       * `grub` - `md5crypt` 명령 실행, password 설정
+
+       * 편집기를 이용하여 `/boot/grub/grub.conf` 에 
+
+         `password --md5 ~~~~~~ ` 추가 
+
+5. 사용자 관리
+
+   일반 계정 권한을 얻고 나면 root 권한 획득이 손쉽다.
+
+   일반 계정 사용자이면서 UID가 0인 사용자를 찾아 관리해야한다.
+
+   `PAM, su , sudo ` 등 이용
+
+6. 보안이 강화된 서비스 대체 이용 
+
+   telnet 보다는 `ssh` 이용 ( telnet 은 평문 전송, ssh 는 암호문 전송)
+   주요 보안 툴 : ***tcpdump , ethereal, wireshark***( 패킷 캡쳐링 도구)
+
+7. 파일 시스템 관리 : `Set-UID, Set-GID, Sticky-Bit` 권한은 검색을 통해 필요없는 경우 제거
+
+   `/etc/fstab/` 파일에 Set-UID 나 Set-GID 설정을 제한하는 `nosuid` 옵션 지정
+
+
+
+##### sysctl 과 보안 
+
+* 개요 : 리눅스 커널 제어를 위한 매개변수 . `/proc/sys` 디렉터리에 존재. 
+
+* 일반적인 커널 매개 변수 변경 방법 
+
+  * 예시 . ping 에 응답하지 않도록 설정하기?
+
+    `sysctl -w net.ipv4.icmp_echo_ignore_all = 1` : 1 이 응답x, 0 이 기본으로 응답 o
+
+* 명령어 `sysctl`
+
+  * 옵션 
+
+    * `-a,-A` : 커널 매개 변수와 값을 모두 출력
+    * `-p` : 환경 변수 파일에 설정된 값 출력, 파일명 미지정 시 /etc/sysctl.conf 파일의 내용 출력
+    * `-n` : 특정 매개 변수에 대한 값 출력
+    * `-w 변수=값` : 매개 변수에 값을 설정
+
+  * 예시
+
+    ```bash
+    sysctl -a # 커널 매개 변수와 값 모두 출력
+    sysctl -p # 환경 변수 팡리 설정값 출력
+    sysctl -n net.ip4.icmp_echo_ignore_all #-n 뒤의 내용 출력
+    sysctl -w net.ip4.icmp_echo_ignore_all=0 #변수 변경 ( 핑 응답 O )
+    ```
+
+##### SSH (Secure Shell)
+
+* 개요 : 패킷 전송 시 암호화 시켜 안전하게 전송 가능함. 
+
+  * ssh2 와 ssh1 두가지 버전이 존재. 
+  * ssh2 는 이중-암호화 RSA 키 교환을 비롯한 다양한 키-교환 방법을 지원.
+
+* ssh 특징 
+
+  * `rlogin` 처럼 패스워드 입력 없이 로그인이 가능
+  * `rsh` 처럼 원격 셸 지원
+  * `scp` 를 이용한 원격 복사 지원
+  * `sftp` 를 이용한 안전한 파일 전송
+
+* ssh 환경 설정 파일?
+
+  * `/etc/ssh/sshd_config` 에 환경 설정 파일 존재
+  * `/etc/rc.d/init.d/sshd` 에 스크립트
+
+* 명령어 사용
+
+  ```bash
+  ssh [option] 호스트명 or IP 주소
+  ssh 계정이름@호스트네임
+  ssh 호스트네임 명령
+  ```
+
+  * 옵션
+    * `-l` : 다른 계정으로 접속할 때 사용, 이 옵션 대신 서버 주소 앞에 @ 붙여 사용 가능
+    * `-p`: ssh 서버의 포트 번호가 22번이 아닐 경우 -p 옵션을 사용해서 바뀐 포트를 지정할 수 있다.
+
+  ```bash
+  ssh 203.247.40.246 
+  ssh -l yuloje 192.168.1.1 #192.168.1.1 서버로 클라이언트의 계정과 다른 계정인 yuloje 로 접속 시도
+  ssh yuloje@192.168.1.1 # 192.168.1.1 서버의 yuloje 계정으로 접속 시도
+  ssh -p 180 192.168.1.1 # 포트 번호가 22가 아닌 180일 경우 사용 
+  ssh -l yuloje posein.org mkdir data #poseing.org 에 yuloje 계정으로 접속하여 data 디렉토리 생성
+  ```
+
+* **ssh-keygen**
+
+  * 옵션
+
+    `-t` : 사용할 암호화 알고리즘을 지정하는 옵션, rsa,dsa 사용 가능. ssh2 버전은 default로 rsa 사용 
+
+  * ssh-keygen -t dsa : dsa 를이용하여 인증키를 생성
+
+  * ssh-keygen 입력시?
+
+    * RSA 를 이용하여 인증키 생성 : id_rsa 와 id_rsa.pub 생성
+
+      패스워드를 설정하지 않으면 서버 접속시 패스워드 필요없음.
+
+      id_rsa.pub 은 클라이언트에서 생성된 공개키로, server의 .ssh/authorized_keys 에 복사해둔다.
+
+      복사 시에는 scp를 사용하자.
+
+      `scp .ssh/id_rsa.pub 203.247.40.246: .ssh/authorized_keys` : 공개키 복사
+
+      `ssh 203.247.40.246` : 접속
+
+##### PAM (Pluggable Authentication Module)
+
+* 개요 : 사용자를 인증하고 그 사용자의 서비스에 대한 접근을 제어하는 모듈화된 방법
+
+* 구성 
+
+  * 라이브러리 : `/lib/security 또는 /lib64/security` 에 위치 , 동적으로 로드 가능한 
+
+    `.so` 형태로 되어 있다. 
+
+  * 서비스  `/etc/pam.d` 디렉터리 안에 설정. 특별히 지정되지 않는 서비스에 대한 인증은
+    `/etc/pam.d/other` 에서 관리
+
+* PAM 주요 모듈
+
+  * **pam_securetty.so** : 접속하는 계정이 root 인 경우 `/etc/securetty` 파일에 기록된 터미널을 통하는 경우에만 허가하도록 한다. 
+    * `/etc/pam.d/login` , `/etc/pam.d/remote` 파일에 설정되어 있다. telnet 이 적용받는다.
+
+
+
+##### sudo (Superuser do)
+
+* 개요 : 특정 사용자가 root 사용자 권한을 가질 수 있도록 일부 명령 또는 모든 명령을 실행할 수 있도록 한다.
+* `visudo` 명령 실행 시 vi 편집기가 `/etc/sudoers` 파일을 열면서 설저하도록 되어 있다.
+* 적용된 사용자는 `sudo` + 명령어 형태로 사용
+  * 예시 . `sudo /usr/sbin/useradd joon` : joon 이란 사용자 추가한다.
+  * `yuloje ALL=/usr/sbin/useradd, /usr/bin/passwd` : yuloje 에게 root 권한의 useradd 및 passwd 명령을 부여하고, 접속한 곳에 상관없이(ALL) 사용 가능하다.
+  * `jalin localhost=/usr/sbin/useradd, /usr/bin/passwd` : jalin 에게 root 권한의 useradd 및 passwd 명령을 부여하나, localhost 에서 접속한 경우에만 허용
+
+
+
+##### 파일 시스템 보안
+
+* lsattr : 파일에 설정된 속성 확인
+* chattr : 파일의 속성을 변경하는 명령, root 사용자만 사용 가능
+  * `chattr [option] mode 파일명 `
+  * `mode` 는 `+ - = ` 을 사용한다. + 는 부여 - 는 해제, = 해당 속성만 부여하고 해제
+  * `+a` : 파일 삭제 불가, 추가만 가능
+  * ***`+i`: 파일 삭제나 변경 불가***
+  * `-i +a` : i속성 제거 a속성 부여
+* ACL (Access Control List)
+  * 파일이나 디렉터리에 접근 권한을 제어할 수 없도록 만든 시스템
+  * `getfacl [option]`
+  * `setfacl` 
+    * `setfacl -m u:posein:rw jalintxt` : posein 사용자가 jalin.txt 파일에 대해 읽고(read) 쓸 수 (write) 있는 권한을 부여한다. 
+
+
+
+##### 주요 보안 도구
+
+1. nmap ( network mapper ) : 네트워크 탐지 도구 및 보안 스캐너 ( 포트 스캔 )
+
+   동종 계열 : WPScan,Nikto 등
+
+2. tcpdump : 네트워크 트래픽 모니터링 도구
+
+   동종 계열 : ethereal, wireshark
+
+3. tripwire : 파일 무결성 검사, 파일의 변조여부 검사 도구
+
+   Backdoor 감지.
+
+4. nessus : 취약점 검사 도구 
+
+   유사 계열 : COPS, SATAN 
+
+5. GnuPG : 공개키와 비밀키를 생성하여 암호화하는 기법인 OpenGPG의 공개 버전
+
+   비밀키를 가진 사용자만이 파일을 해독(복호화)할 수 있다.
+
+6. John The Ripper : 패스워드 크랙 도구, 다양한 운영체제를 지원
+
+   암호화된 패스워드가 들어 있는 파일과 암호로 사용될 만한 형태를 대입하여 패스워드를 알아낸다??
+
+##### SELinux(Security Enhanced Linux)
+
+* 보안이 강화된 리눅스 . root 권한을 획득하더라도 해당 데몬에서만 root 권한이 적용
+
+* `/etc/selinux/config` 또는 vi 편집기로 수정
+
+  `getenforce` : 현재 상태 확인
+
+  `setenforce` :  SELinux 설정 ( 0 하면 Permissive 1 하면 Enforcing )
+
+
+
+#### 시스템 백업
+
+
+
