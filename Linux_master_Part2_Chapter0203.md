@@ -770,5 +770,54 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
 
 #### 시스템 백업
 
+##### 백업 전에 고려할 사항
 
+* 백업 대상 선택 : 자동백업이나, 손쉽게 생성되는 데이터를 제외한 
+
+  `/etc , /usr, /home, /var` 과 같은 것들. 
+
+* 백업의 종류 
+
+  * 전체 백업 Full Backup : 특정 디스크나 파티션 등 전체를 백업
+  * 부분 백업 Partail Backup : 선택 파일만 백업
+  * 증분 백업 Incremental Backup : 증가된 내용만 백업
+  * 차등 백업 Differential Backup : 바뀐 부분만 백업
+
+##### Backup 및 Restore 관련 명령어
+
+* **tar(tape archive)** : 원본 파일을 남겨둠, 소량 백업에 좋다. GNU tar 압축지원 
+
+  * 전체백업 : `tar xvf home.tar`
+  * 증분 백업 : `tar -g list -cvfp home1.tar /home` 
+  * 증분 백업 복원 : `tar xvf home1.tar -C /`
+  * 날짜 이용 부분 백업 : `tar -c -v -N '13 May 2013' -f home.tar /home `
+  * 분할 및 압축 백업 : `tar zcvf - /home | split -b 10m - home.tar.gz`
+  * 복원 : `cat home.tar.gza* | tar zvxf -` # split 복원 시 cat 사용한다.
+
+* **cpio (copy input to output)** : 특수 파일도 백업 가능. 
+
+  * 사용 예 : `find /home | cpio -ocv > home.cpio `
+    * /home 을 home.cpio파일로 백업한다.
+
+* **dump** : 파일이 아닌 파일 시스템 전체를 백업할 때 사용
+
+* **restore** : 백업된 데이터 복원 
+
+  * `restore -rf backup.dump` : backup.dump 에 백업된 데이터를 전체 복원한다.
+    - 상호 대화식으로 복원. 
+
+* **dd** (data dumper) 
+
+  * 파티션이나 디스크 단위로 백업. 
+
+  * `dd if=/dev/sda1 of=/dev/sdb1 bs=1k`
+
+    블록 사이즈를(bs) 1K 로 하여 /dev/sda1 을 /dev/sdb1 으로 백업
+
+* **rsync (remote synchronous)**
+
+  * 네트워크로 연결된 원격지의 파일들을 동기화하는 유틸리티. 
+  * `rsync [option] source destination` 
+  * `rsync -av /home /home5`
+    * /home 디렉토리를 그대로 보존하면서 /home5 로 백업한다.
 
