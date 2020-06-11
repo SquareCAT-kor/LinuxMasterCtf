@@ -112,7 +112,6 @@
   * httpd 명령을 이용한 실행
 
     * `httpd -t`  응답 : `Sysntax OK` : httpd.conf 파일의 문법적 오류를 검사
-    * `httpd -l` : 아파치 웹 서버의 다중처리모듈 관련 정보 확인. 
 
   * 스크립트 파일을 이용한 실행
 
@@ -528,7 +527,7 @@
     * /etc/rc.d/init.d/squid
   * squid.conf 설정
     * http_port 3128  : 기본 포트값 3128, http_port 로 설정함
-    * ***cache_dir ufs /var/spool/squid 100 16 25***
+    * cache_dir ufs /var/spool/squid 100 16 25
       * ufs 는 squid 의 저장 포맷, /var/spool/squid 가 관련 디렉터리
       * 100은 정보크기, 단위 MB 16은 캐시가 저장되는 첫번째 하위 디렉터리 개수, 256은 두번째
 
@@ -550,7 +549,6 @@
 
 * VNC Virtual Network Computing 
   * VNC는 RFB 프로토콜을 이용하여 원격의 다른 컴퓨터에서 그래픽 환경 기반으로 데스크톱을 공유할 수 있는 환경
-  * 리눅스와 윈도우 같은 크로스플랫폼 간 데스크톱 공유, 가상화 기반의 게스트 운영체제 제어, 구글 안드로이드나 애플 Iphone 과 같은 모바일 기기 제어, 임베디드 기기 제어에 유용함.
 * /etc/sysconfig/vncservers 를 편집
   * -gemotry ? : 해상도 설정
 * VNC 서버 패스워드 설정
@@ -658,7 +656,7 @@
 * iptables 공격대비
   * ICMP Flooding 대비
   * TCP Flooding 대비
-    * fail2ban : SSH 뿐 아니라 아파치 웹 등의 로그 파일을 분석하여 공격을 차단하는 기능 제공
+    * fail2ban
     * sshguard
     * DenyHosts
 

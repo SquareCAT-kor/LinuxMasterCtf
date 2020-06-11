@@ -53,7 +53,7 @@
       tar Jxvf linux-4.12.2.xz # 압축 해제
       cd linux-4.12.2
       make mrproper # 설정 초기화
-      make menuconfig # 커널 컴파일 옵션 설정 도구 실행
+      make menuconfig # 커널 컴파일 옵션 설정 도구 실행 
       make bzImage # 커널 이미지 생성 # bzip2로 압축해서 생성. 
       make modules # 커널 모듈 생성을 위한 컴파일 # 커널 옵션 설정 시 m 으로 설정한 항목 모듈화
       make modules_install # 모듈 설치 작업 # /lib/modules/커널버전 디렉터리에 안에 복사
@@ -63,7 +63,7 @@
       
       ```
 
-    * 커널 컴파일 주요 도구
+    * ***커널 컴파일 주요 도구***
 
       ```bash
       make config # 텍스트 기반의 설정 도구로, 터미널 환경에서 y,m,n 으로 설정
@@ -199,6 +199,7 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
   * **GPL , LGPL 라이센스**, **Jaroslav Kysela**
 * 오픈 사운드 시스템 OSS ( Open Sound System )
   * OSS는 초기에 free 였기에, 리눅스 커널에서 구현되었던 OSS/free 를 포기하고 ALSA 로 대체.
+  * POSIX read,write,ioctl 등에 기반해있다. 
 * ALSA 명령어
   * `alsactl` ***=ALSA 사운드카드를 제어하는 명령어***
     * 옵션 
@@ -562,7 +563,7 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
 
 3. 시스템 정보 감추기
 
-4. rott 패스워드 변경 제한
+4. root 패스워드 변경 제한
 
    * ***grub*** : root 패스워드를 변경, 복원 - 로컬 접근이 가능한 사용자가 시스템 재부팅 과정을 거쳐, 손쉽게 root 의 패스워드를 변경할 수 있다.
 
@@ -801,6 +802,10 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
 
 * **dump** : 파일이 아닌 파일 시스템 전체를 백업할 때 사용
 
+  * /etc/fstab/ 파일을 참조하여 백업한다. -> `restore` 명령어로 복원
+  * Incremental 백업 지원
+  * 파티션 단위 백업에 적합하다. 
+
 * **restore** : 백업된 데이터 복원 
 
   * `restore -rf backup.dump` : backup.dump 에 백업된 데이터를 전체 복원한다.
@@ -817,7 +822,8 @@ ex: `cancel printer-7`: 아이디가 printer-7 인 작업 취소
 * **rsync (remote synchronous)**
 
   * 네트워크로 연결된 원격지의 파일들을 동기화하는 유틸리티. 
+  * 기본적으로 ssh나 rsh 를 이용하여 전송, 다른 프로토콜 접속 지원
   * `rsync [option] source destination` 
   * `rsync -av /home /home5`
     * /home 디렉토리를 그대로 보존하면서 /home5 로 백업한다.
-
+  * 데이터를 압축하여 전송 가능, 심볼릭 링크나 링크 참조 파일도 복사가능.

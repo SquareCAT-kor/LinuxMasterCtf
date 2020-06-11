@@ -20,7 +20,7 @@
 
 ## 2. Linux 배포판의 종류 , 계열
 
-* 최초 배포판 : SLS - Softlanding Linux system -> Slackware -> Yggdrasik -> Debian Project
+* 최초 배포판 : SLS - Softlanding Linux system -> Slackware -> Yggdrasil -> Debian Project
 * 분류 ( 패키지 관리 기법에 따라 분류)
   * 슬랙웨어 : 소프트웨어를 최상단에서 최대한 수정하여 배포, 내장 프로그램 사용은 편리하나, 새로운 패키지를 적용하거나 수정하기가 어렵다.
     * **SuSE 수세**, Porteus, Vector, Salix OS 등
