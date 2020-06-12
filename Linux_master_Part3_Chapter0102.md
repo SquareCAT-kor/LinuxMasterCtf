@@ -49,7 +49,7 @@
 
 * 소스파일 검증? : `md5sum` 또는 (sha1sum, sha256sum 등 이용)
 
-* Apaache 설치 과정
+* Apache 설치 과정
 
   * `killall` -> `rpm -e `예전 버전 삭제 -> `tar` 압축 해제 -> `cd ~~`압축 풀린 디렉토리 이동 
     -> 환경 설정 `--enable-mods-shared=all` -> 컴파일`make` -> 설치 `make install`
